@@ -178,7 +178,10 @@ def normalize(matrix):
     scaler = MinMaxScaler(feature_range=(0, 1))
     return scaler.fit_transform(matrix.T).T
 def plot_loss_histories(histories,labels):
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+    if TARGET_TYPE=="simulated":
+        fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+    elif TARGET_TYPE=="real":
+        fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     axes_flat = axes.flat
     for ax, hist, lbl in zip(axes.flat, histories, labels):
         ax.plot(hist)
@@ -406,10 +409,13 @@ def train(train_data_x,train_data_y,target_data_x,target_data_y):
     result_list=[]
     result_list.append(pred_loss_list)
     result_list.append(mmd_loss_list)
-    result_list.append(ccc_list)
-    result_list.append(rmse_list)
-    result_list.append(corr_list)
-    plot_loss_histories(result_list,['pred_loss', 'mmd_loss', 'target_ccc', 'target_rmse','target_corr'])
+    if TARGET_TYPE == "simulated":
+        result_list.append(ccc_list)
+        result_list.append(rmse_list)
+        result_list.append(corr_list)
+        plot_loss_histories(result_list,['pred_loss', 'mmd_loss', 'target_ccc', 'target_rmse','target_corr'])
+    elif TARGET_TYPE=="real":
+        plot_loss_histories(result_list,['pred_loss', 'mmd_loss'])
     preds, gt = None, None
     for batch_idx, (x, y) in enumerate(test_target_loader):
         model_extract.eval()
@@ -455,5 +461,6 @@ for good in range (1):
         CORR_LIST.append(correlation)
     elif TARGET_TYPE == "real":
         final_preds_target.to_csv(RESULT_DIRECTORY + 'target_predicted_fraction' + str(good) + '.csv')
-result_dataframe=pd.DataFrame({"CCC":CCC_LIST,"RMSE":RMSE_LIST,"CORR":CORR_LIST})
-result_dataframe.to_csv(RESULT_DIRECTORY + "target_result_all.csv")
+if TARGET_TYPE=="simulated":
+    result_dataframe=pd.DataFrame({"CCC":CCC_LIST,"RMSE":RMSE_LIST,"CORR":CORR_LIST})
+    result_dataframe.to_csv(RESULT_DIRECTORY + "target_result_all.csv")
