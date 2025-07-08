@@ -11,8 +11,8 @@ import torch.nn as nn
 import torch.utils.data as Data
 import argparse
 import random
-DATASET = 'breast_cancer_atlas'
-DATA_DIRECTORY = '/mnt/disk/zequan/Data/'
+DATASET = 'breast_'
+DATA_DIRECTORY = ''
 TRAIN_SAMPLE_NUM = 4000
 TAREGT_SAMPLE_NUM = 1000
 BATCH_SIZE = 100
